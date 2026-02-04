@@ -9,7 +9,6 @@ import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
 import { QrScannerIcon } from "@/imports/qr-scanner-icon";
 import { NfcReaderIcon } from "@/imports/nfc-reader-icon";
-import { FilterIcon } from "@/imports/filter-icon";
 import { Input } from "@/app/components/ui/input";
 import {
   Select,
@@ -139,47 +138,45 @@ export function PrintedParts() {
             <Button variant="ghost" size="icon" onClick={() => {}}>
               <NfcReaderIcon />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => {}}>
-              <FilterIcon />
-            </Button>
           </div>
         )}
       </div>
 
-      {/* Filters */}
-      <div className="space-y-2">
-        <Select value={filterFilament} onValueChange={setFilterFilament}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by filament" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Filaments</SelectItem>
-            {filaments.map((filament) => (
-              <SelectItem key={filament.id} value={filament.id}>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded"
-                    style={{ backgroundColor: filament.colorHex }}
-                  />
-                  {filament.name}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {false && (
+        <div className="space-y-2">
+          <Select value={filterFilament} onValueChange={setFilterFilament}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by filament" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Filaments</SelectItem>
+              {filaments.map((filament) => (
+                <SelectItem key={filament.id} value={filament.id}>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded"
+                      style={{ backgroundColor: filament.colorHex }}
+                    />
+                    {filament.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger>
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="date">Date (Newest)</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
-            <SelectItem value="weight">Weight Used</SelectItem>
-            <SelectItem value="time">Print Time</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Date (Newest)</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="weight">Weight Used</SelectItem>
+              <SelectItem value="time">Print Time</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Parts List */}
       {filteredParts.length > 0 ? (
@@ -237,7 +234,7 @@ export function PrintedParts() {
         className="fixed right-4 rounded-full h-14 w-14 p-0 shadow-lg z-50 bg-orange-500 hover:bg-orange-600 text-white"
         style={{ bottom: "calc(4rem + 24px + env(safe-area-inset-bottom))" }}
       >
-        <PlusIcon style={{ width: '40px', height: '40px' }} />
+        <PlusIcon className="size-10" />
       </Button>
     </div>
   );

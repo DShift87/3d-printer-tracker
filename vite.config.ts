@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/3d-printer-tracker/', // GitHub Pages base path
+  base: '/',
   server: {
     host: true, // Listen on all addresses so you can open the app on your phone
     port: 5173,
