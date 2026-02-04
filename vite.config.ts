@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   base: '/3d-printer-tracker/', // GitHub Pages base path
+  server: {
+    host: true, // Listen on all addresses so you can open the app on your phone
+    port: 5173,
+  },
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them

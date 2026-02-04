@@ -174,7 +174,8 @@ export function Filaments() {
       <Button
         onClick={handleAddNew}
         size="lg"
-        className="fixed bottom-20 right-4 rounded-full h-14 w-14 p-0 shadow-lg z-50 bg-orange-500 hover:bg-orange-600 text-white"
+        className="fixed right-4 rounded-full h-14 w-14 p-0 shadow-lg z-50 bg-orange-500 hover:bg-orange-600 text-white"
+        style={{ bottom: "calc(4rem + 24px + env(safe-area-inset-bottom))" }}
       >
         <PlusIcon style={{ width: '40px', height: '40px' }} />
       </Button>

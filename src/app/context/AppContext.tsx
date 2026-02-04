@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { toast } from "sonner";
+import { isFirebaseConfigured } from "@/app/lib/firebase";
+import { loadCloudData, saveCloudData, subscribeToCloudData } from "@/app/lib/cloudStorage";
 
 export interface Filament {
   id: string;
@@ -33,85 +36,133 @@ interface AppContextType {
   addPrintedPart: (part: Omit<PrintedPart, "id">) => void;
   updatePrintedPart: (part: PrintedPart) => void;
   deletePrintedPart: (id: string) => void;
+  isCloudSync: boolean;
+  isCloudLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [filaments, setFilaments] = useState<Filament[]>([
-    {
-      id: "1",
-      name: "Premium Black PLA",
-      material: "PLA",
-      color: "Black",
-      colorHex: "#000000",
-      totalWeight: 1000,
-      remainingWeight: 750,
-      manufacturer: "Hatchbox",
-      diameter: 1.75,
-      price: 19.99,
-    },
-    {
-      id: "2",
-      name: "Transparent PETG",
-      material: "PETG",
-      color: "Clear",
-      colorHex: "#E0F2FE",
-      totalWeight: 1000,
-      remainingWeight: 200,
-      manufacturer: "eSUN",
-      diameter: 1.75,
-      price: 24.99,
-    },
-    {
-      id: "3",
-      name: "Sky Blue PLA+",
-      material: "PLA",
-      color: "Blue",
-      colorHex: "#3B82F6",
-      totalWeight: 1000,
-      remainingWeight: 950,
-      manufacturer: "Polymaker",
-      diameter: 1.75,
-      price: 22.99,
-    },
-  ]);
+const SEED_FILAMENTS: Filament[] = [
+  {
+    id: "1",
+    name: "Premium Black PLA",
+    material: "PLA",
+    color: "Black",
+    colorHex: "#000000",
+    totalWeight: 1000,
+    remainingWeight: 750,
+    manufacturer: "Hatchbox",
+    diameter: 1.75,
+    price: 19.99,
+  },
+  {
+    id: "2",
+    name: "Transparent PETG",
+    material: "PETG",
+    color: "Clear",
+    colorHex: "#E0F2FE",
+    totalWeight: 1000,
+    remainingWeight: 200,
+    manufacturer: "eSUN",
+    diameter: 1.75,
+    price: 24.99,
+  },
+  {
+    id: "3",
+    name: "Sky Blue PLA+",
+    material: "PLA",
+    color: "Blue",
+    colorHex: "#3B82F6",
+    totalWeight: 1000,
+    remainingWeight: 950,
+    manufacturer: "Polymaker",
+    diameter: 1.75,
+    price: 22.99,
+  },
+];
 
-  const [printedParts, setPrintedParts] = useState<PrintedPart[]>([
-    {
-      id: "1",
-      name: "Phone Stand",
-      filamentId: "1",
-      weightUsed: 45,
-      printTime: 180,
-      printDate: "2026-02-01",
-      notes: "Printed at 0.2mm layer height",
-    },
-    {
-      id: "2",
-      name: "Cable Organizer",
-      filamentId: "3",
-      weightUsed: 28,
-      printTime: 120,
-      printDate: "2026-02-02",
-    },
-  ]);
+const SEED_PARTS: PrintedPart[] = [
+  {
+    id: "1",
+    name: "Phone Stand",
+    filamentId: "1",
+    weightUsed: 45,
+    printTime: 180,
+    printDate: "2026-02-01",
+    notes: "Printed at 0.2mm layer height",
+  },
+  {
+    id: "2",
+    name: "Cable Organizer",
+    filamentId: "3",
+    weightUsed: 28,
+    printTime: 120,
+    printDate: "2026-02-02",
+  },
+];
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const useCloud = isFirebaseConfigured();
+  const [filaments, setFilaments] = useState<Filament[]>(
+    useCloud ? [] : SEED_FILAMENTS
+  );
+  const [printedParts, setPrintedParts] = useState<PrintedPart[]>(
+    useCloud ? [] : SEED_PARTS
+  );
+  const [isCloudLoading, setIsCloudLoading] = useState(useCloud);
+
+  useEffect(() => {
+    if (!useCloud) return;
+    let unsub: (() => void) | undefined;
+    (async () => {
+      try {
+        const data = await loadCloudData();
+        if (data) {
+          setFilaments(data.filaments);
+          setPrintedParts(data.printedParts);
+        }
+      } finally {
+        setIsCloudLoading(false);
+      }
+      unsub = subscribeToCloudData((data) => {
+        setFilaments(data.filaments);
+        setPrintedParts(data.printedParts);
+      });
+    })();
+    return () => {
+      unsub?.();
+    };
+  }, [useCloud]);
+
+  const persist = (f: Filament[], p: PrintedPart[]) => {
+    if (!useCloud) return;
+    saveCloudData({ filaments: f, printedParts: p }).catch((e) => {
+      console.error("Cloud save failed:", e);
+      toast.error("Cloud sync failed. Check console or Firestore rules.");
+    });
+  };
 
   const addFilament = (filamentData: Omit<Filament, "id">) => {
     const newFilament: Filament = {
       ...filamentData,
       id: Date.now().toString(),
     };
-    setFilaments([...filaments, newFilament]);
+    const next = [...filaments, newFilament];
+    setFilaments(next);
+    persist(next, printedParts);
     return newFilament;
   };
 
   const updateFilament = (filament: Filament) => {
-    setFilaments(filaments.map((f) => (f.id === filament.id ? filament : f)));
+    const next = filaments.map((f) => (f.id === filament.id ? filament : f));
+    setFilaments(next);
+    persist(next, printedParts);
   };
 
   const deleteFilament = (id: string) => {
-    setFilaments(filaments.filter((f) => f.id !== id));
+    const next = filaments.filter((f) => f.id !== id);
+    setFilaments(next);
+    persist(next, printedParts);
   };
 
   const addPrintedPart = (partData: Omit<PrintedPart, "id">) => {
@@ -119,67 +170,78 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ...partData,
       id: Date.now().toString(),
     };
-    setPrintedParts([...printedParts, newPart]);
+    const nextParts = [...printedParts, newPart];
+    setPrintedParts(nextParts);
 
     // Update filament weight
     const filament = filaments.find((f) => f.id === partData.filamentId);
     if (filament) {
-      updateFilament({
+      const updated = {
         ...filament,
         remainingWeight: Math.max(0, filament.remainingWeight - partData.weightUsed),
-      });
+      };
+      const nextFilaments = filaments.map((f) =>
+        f.id === updated.id ? updated : f
+      );
+      setFilaments(nextFilaments);
+      persist(nextFilaments, nextParts);
+    } else {
+      persist(filaments, nextParts);
     }
   };
 
   const updatePrintedPart = (part: PrintedPart) => {
     const oldPart = printedParts.find((p) => p.id === part.id);
-    setPrintedParts(printedParts.map((p) => (p.id === part.id ? part : p)));
+    const nextParts = printedParts.map((p) => (p.id === part.id ? part : p));
 
-    // Adjust filament weights if filament or weight changed
+    let nextFilaments = filaments;
     if (oldPart) {
       if (oldPart.filamentId === part.filamentId) {
-        // Same filament, just adjust the difference
         const weightDiff = part.weightUsed - oldPart.weightUsed;
         const filament = filaments.find((f) => f.id === part.filamentId);
         if (filament) {
-          updateFilament({
+          const updated = {
             ...filament,
             remainingWeight: Math.max(0, filament.remainingWeight - weightDiff),
-          });
+          };
+          nextFilaments = filaments.map((f) =>
+            f.id === updated.id ? updated : f
+          );
         }
       } else {
-        // Different filament, return weight to old and subtract from new
         const oldFilament = filaments.find((f) => f.id === oldPart.filamentId);
         const newFilament = filaments.find((f) => f.id === part.filamentId);
-        if (oldFilament) {
-          updateFilament({
-            ...oldFilament,
-            remainingWeight: oldFilament.remainingWeight + oldPart.weightUsed,
-          });
-        }
-        if (newFilament) {
-          updateFilament({
-            ...newFilament,
-            remainingWeight: Math.max(0, newFilament.remainingWeight - part.weightUsed),
-          });
-        }
+        nextFilaments = filaments.map((f) => {
+          if (f.id === oldPart.filamentId && oldFilament)
+            return { ...f, remainingWeight: f.remainingWeight + oldPart.weightUsed };
+          if (f.id === part.filamentId && newFilament)
+            return { ...f, remainingWeight: Math.max(0, f.remainingWeight - part.weightUsed) };
+          return f;
+        });
       }
     }
+    setPrintedParts(nextParts);
+    setFilaments(nextFilaments);
+    persist(nextFilaments, nextParts);
   };
 
   const deletePrintedPart = (id: string) => {
     const part = printedParts.find((p) => p.id === id);
+    const nextParts = printedParts.filter((p) => p.id !== id);
+    let nextFilaments = filaments;
     if (part) {
-      // Return weight to filament
       const filament = filaments.find((f) => f.id === part.filamentId);
       if (filament) {
-        updateFilament({
-          ...filament,
-          remainingWeight: filament.remainingWeight + part.weightUsed,
-        });
+        nextFilaments = filaments.map((f) =>
+          f.id === filament.id
+            ? { ...f, remainingWeight: f.remainingWeight + part.weightUsed }
+            : f
+        );
       }
     }
-    setPrintedParts(printedParts.filter((p) => p.id !== id));
+    setPrintedParts(nextParts);
+    setFilaments(nextFilaments);
+    persist(nextFilaments, nextParts);
   };
 
   return (
@@ -193,6 +255,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addPrintedPart,
         updatePrintedPart,
         deletePrintedPart,
+        isCloudSync: useCloud,
+        isCloudLoading,
       }}
     >
       {children}

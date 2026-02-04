@@ -35,7 +35,10 @@ export function FilamentDetail() {
 
   if (!filament) {
     return (
-      <div className="p-4 max-w-md mx-auto">
+      <div
+        className="p-4 max-w-md mx-auto"
+        style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
+      >
         <Button variant="ghost" onClick={() => navigate("/filaments")} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
@@ -177,7 +180,10 @@ export function FilamentDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div
+      className="min-h-screen bg-background pb-20"
+      style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
+    >
       <div className="p-4 space-y-4 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between pt-2">

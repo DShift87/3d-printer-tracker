@@ -1,0 +1,17 @@
+import sharp from "sharp";
+import { readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, "..");
+const iconDir = join(root, "public", "3d-printer-tracker");
+const svgPath = join(iconDir, "icon.svg");
+
+const svg = readFileSync(svgPath);
+
+for (const size of [192, 512]) {
+  const png = await sharp(svg).resize(size, size).png().toBuffer();
+  writeFileSync(join(iconDir, `icon-${size}.png`), png);
+  console.log(`Wrote icon-${size}.png`);
+}

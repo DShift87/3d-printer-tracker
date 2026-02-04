@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 import { DollarIcon } from "@/imports/dollar-icon";
 
 export function Dashboard() {
-  const { filaments, printedParts } = useApp();
+  const { filaments, printedParts, isCloudSync, isCloudLoading } = useApp();
   const navigate = useNavigate();
 
   // Calculate stats
@@ -29,22 +29,32 @@ export function Dashboard() {
   const totalPrintTime = printedParts.reduce((sum, p) => sum + p.printTime, 0);
   const totalPrintHours = Math.floor(totalPrintTime / 60);
 
-  // Most used filament
+  // Top 3 most used filaments (by weight used)
   const filamentUsage = printedParts.reduce((acc, part) => {
     acc[part.filamentId] = (acc[part.filamentId] || 0) + part.weightUsed;
     return acc;
   }, {} as Record<string, number>);
 
-  const mostUsedFilamentId = Object.keys(filamentUsage).reduce((a, b) =>
-    filamentUsage[a] > filamentUsage[b] ? a : b
-  , "");
-  const mostUsedFilament = filaments.find((f) => f.id === mostUsedFilamentId);
+  const mostUsedFilamentIds = Object.entries(filamentUsage)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3)
+    .map(([id]) => id);
+  const mostUsedFilaments = mostUsedFilamentIds
+    .map((id) => filaments.find((f) => f.id === id))
+    .filter(Boolean) as typeof filaments;
 
   return (
     <div className="p-4 space-y-6 max-w-md mx-auto">
       {/* Header */}
       <div className="pt-2">
-        <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
+          {isCloudSync && (
+            <span className="text-xs text-muted-foreground shrink-0">
+              {isCloudLoading ? "Syncing…" : "☁️ Cloud"}
+            </span>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">
           Your 3D printing overview
         </p>
@@ -139,23 +149,42 @@ export function Dashboard() {
         )}
       </div>
 
-      {/* Most Used Filament */}
-      {mostUsedFilament && (
-        <Card className="p-4 bg-gradient-to-br from-primary/5 to-primary/10">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-xs text-muted-foreground mb-1">Most Used</p>
-              <p className="font-semibold">{mostUsedFilament.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {filamentUsage[mostUsedFilamentId]}g used
-              </p>
-            </div>
+      {/* Most Used */}
+      <div>
+        <h2 className="font-semibold mb-3">Most Used</h2>
+        {mostUsedFilaments.length > 0 ? (
+          <div className="space-y-2">
+            {mostUsedFilaments.map((filament) => (
+              <Card
+                key={filament.id}
+                className="p-3 cursor-pointer hover:bg-accent/50 transition-colors"
+                onClick={() => navigate(`/filaments/${filament.id}`)}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
+                    style={{ backgroundColor: filament.colorHex }}
+                  >
+                    <FilamentIcon className="w-5 h-5 text-white drop-shadow-md" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{filament.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {filamentUsage[filament.id]}g used
+                    </p>
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground shrink-0" />
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
-      )}
+        ) : (
+          <Card className="p-6 text-center">
+            <TrendingUp className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">No usage data yet</p>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

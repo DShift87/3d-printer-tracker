@@ -30,7 +30,10 @@ export function PrintedPartDetail() {
 
   if (!part) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div
+        className="flex items-center justify-center h-screen"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Part not found</h2>
           <Button onClick={() => navigate("/parts")}>Go back</Button>
@@ -60,7 +63,10 @@ export function PrintedPartDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div
+      className="min-h-screen bg-background pb-20"
+      style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
+    >
       <div className="p-4 space-y-4 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between pt-2">

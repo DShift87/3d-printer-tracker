@@ -19,13 +19,22 @@ export function MobileLayout({ children }: MobileLayoutProps) {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto pb-20">
+      {/* Main Content - top padding keeps title below status bar */}
+      <main
+        className="flex-1 overflow-y-auto pb-20"
+        style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
+      >
         {children}
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
+      {/* Bottom Navigation - safe area above home indicator */}
+      <nav
+        className="fixed left-0 right-0 bg-background border-t border-border"
+        style={{
+          bottom: 0,
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
         <div className="flex justify-around items-center h-16 px-4">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || 
