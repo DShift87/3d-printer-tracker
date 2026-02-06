@@ -1,12 +1,16 @@
-export function PlusIcon({ className }: { className?: string }) {
+interface PlusIconProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export function PlusIcon({ className, style }: PlusIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
       fill="none"
       className={className}
+      style={{ width: "1em", height: "1em", ...style }}
     >
       <g clipPath="url(#clip0_707_395)">
         <mask

@@ -5,6 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
 import { FilamentDialog } from "@/app/components/FilamentDialog";
 import { FilamentQRDialog } from "@/app/components/FilamentQRDialog";
+import { AddFab } from "@/app/components/AddFab";
 import { useApp, Filament } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
@@ -170,15 +171,7 @@ export function Filaments() {
         filament={selectedFilamentForQR}
       />
 
-      {/* FAB Button */}
-      <Button
-        onClick={handleAddNew}
-        size="lg"
-        className="fixed right-4 rounded-full h-14 w-14 p-0 shadow-lg z-50 bg-orange-500 hover:bg-orange-600 text-white"
-        style={{ bottom: "calc(4rem + 24px + env(safe-area-inset-bottom))" }}
-      >
-        <PlusIcon style={{ width: '40px', height: '40px' }} />
-      </Button>
+      <AddFab onClick={handleAddNew} />
     </div>
   );
 }

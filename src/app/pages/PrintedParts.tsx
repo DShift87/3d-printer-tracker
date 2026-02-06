@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
+import { AddFab } from "@/app/components/AddFab";
 import { useApp, PrintedPart } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
@@ -227,15 +228,7 @@ export function PrintedParts() {
         editPart={editingPart}
       />
 
-      {/* FAB Button */}
-      <Button
-        onClick={handleAddNew}
-        size="lg"
-        className="fixed right-4 rounded-full h-14 w-14 p-0 shadow-lg z-50 bg-orange-500 hover:bg-orange-600 text-white"
-        style={{ bottom: "calc(4rem + 24px + env(safe-area-inset-bottom))" }}
-      >
-        <PlusIcon className="size-10" />
-      </Button>
+      <AddFab onClick={handleAddNew} />
     </div>
   );
 }
