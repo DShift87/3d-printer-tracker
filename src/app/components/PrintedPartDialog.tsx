@@ -221,7 +221,7 @@ export function PrintedPartDialog({
                     <SelectItem key={filament.id} value={filament.id}>
                       <div className="flex items-center gap-2">
                         <div
-                          className="w-4 h-4 rounded"
+                          className="w-4 h-4 rounded border border-[#E5E5E5]"
                           style={{ backgroundColor: filament.colorHex }}
                         />
                         {filament.manufacturer} - {filament.material} {filament.color}

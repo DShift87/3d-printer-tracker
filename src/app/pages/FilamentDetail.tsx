@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Ruler, Download, Printer } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
-import { getIconShadow } from "@/app/components/ui/utils";
+import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
 import { Progress } from "@/app/components/ui/progress";
 import { Badge } from "@/app/components/ui/badge";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
@@ -221,10 +221,13 @@ export function FilamentDetail() {
         <Card className="!p-[16px] gap-0 w-full max-w-none">
           <div className="flex items-center gap-4 w-full">
             <div
-              className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+              className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
               style={{ backgroundColor: filament.colorHex, boxShadow: getIconShadow(filament.colorHex) }}
             >
-              <FilamentIcon active className="w-6 h-6 text-white drop-shadow-md" />
+              <FilamentIcon
+                active
+                className={`w-6 h-6 drop-shadow-md ${isLightColor(filament.colorHex) ? "text-gray-300" : "text-white"}`}
+              />
             </div>
             <div className="flex-1 min-w-0 w-full">
               <h1 className="text-lg font-semibold truncate">{filament.manufacturer}</h1>
@@ -243,7 +246,7 @@ export function FilamentDetail() {
             <span className="text-muted-foreground">Color</span>
             <div className="flex justify-end items-center gap-2 min-w-0">
               <div
-                className="w-5 h-5 rounded border shrink-0"
+                className="w-5 h-5 rounded border border-[#E5E5E5] shrink-0"
                 style={{ backgroundColor: filament.colorHex }}
               />
               <span className="font-medium text-right">{filament.color}</span>

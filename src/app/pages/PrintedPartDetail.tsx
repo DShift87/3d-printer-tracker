@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
-import { getIconShadow } from "@/app/components/ui/utils";
+import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
 import { useApp } from "@/app/context/AppContext";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
@@ -130,13 +130,16 @@ export function PrintedPartDetail() {
         <Card className="!p-[16px] gap-0 max-w-none">
           <div className="flex items-center gap-4">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+              className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-[#E5E5E5]"
               style={{
                 backgroundColor: filament?.colorHex || "#9ca3af",
                 boxShadow: getIconShadow(filament?.colorHex || "#9ca3af"),
               }}
             >
-              <PartsIcon active className="w-6 h-6 text-white drop-shadow-md" />
+              <PartsIcon
+                active
+                className={`w-6 h-6 drop-shadow-md ${isLightColor(filament?.colorHex || "#9ca3af") ? "text-gray-300" : "text-white"}`}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold truncate">{part.name}</h1>
@@ -181,7 +184,9 @@ export function PrintedPartDetail() {
               </div>
               <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
                 <p className="text-xs text-muted-foreground">Estimated Cost</p>
-                <p className="text-xl font-bold text-green-600 mt-0.5">
+                <p
+                  className={`text-xl font-bold mt-0.5 ${partCost !== null ? "text-green-600" : "text-foreground"}`}
+                >
                   {partCost !== null ? `$${partCost.toFixed(2)}` : "—"}
                 </p>
               </div>
@@ -202,7 +207,7 @@ export function PrintedPartDetail() {
                 <span className="text-muted-foreground">Color</span>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-4 h-4 rounded"
+                    className="w-4 h-4 rounded border border-[#E5E5E5]"
                     style={{ backgroundColor: filament.colorHex }}
                   />
                   <span>{filament.color}</span>

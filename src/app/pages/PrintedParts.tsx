@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
-import { Card } from "@/app/components/ui/card";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
+import { ProjectCard } from "@/app/components/ProjectCard";
 import { ProjectDialog } from "@/app/components/ProjectDialog";
 import { useAddAction } from "@/app/context/AddActionContext";
 import { useApp, PrintedPart, Project } from "@/app/context/AppContext";
@@ -51,6 +51,13 @@ export function PrintedParts() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { registerAddHandler, unregisterAddHandler } = useAddAction();
+
+  // When returning from a project, show the Projects tab
+  useEffect(() => {
+    if (location.state?.view === "projects") {
+      setView("projects");
+    }
+  }, [location.state]);
 
   const handleSavePart = (partData: Omit<PrintedPart, "id"> | PrintedPart) => {
     if ("id" in partData) {
@@ -143,6 +150,20 @@ export function PrintedParts() {
   const partCountByProject = (projectId: string) =>
     printedParts.filter((p) => p.projectId === projectId).length;
 
+  const totalCostByProject = (projectId: string): number | null => {
+    const parts = printedParts.filter((p) => p.projectId === projectId);
+    let total = 0;
+    let hasAnyCost = false;
+    for (const part of parts) {
+      const filament = filaments.find((f) => f.id === part.filamentId);
+      if (filament?.price != null && filament?.totalWeight != null) {
+        total += (filament.price / filament.totalWeight) * part.weightUsed;
+        hasAnyCost = true;
+      }
+    }
+    return hasAnyCost ? total : null;
+  };
+
   return (
     <div className="p-4 space-y-4 max-w-md mx-auto pb-24">
       {/* Header */}
@@ -191,16 +212,16 @@ export function PrintedParts() {
       </div>
 
       {/* View tabs: All Parts | Projects */}
-      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
+      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-xl w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
         <button
           type="button"
           onClick={() => setView("all")}
-          className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+          className={`relative flex-1 min-w-0 py-2 px-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
             view === "all" ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
           }`}
         >
           {view === "all" && (
-            <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
+            <span className="absolute inset-0 rounded-[10px] bg-orange-100 z-0" />
           )}
           <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
             <AllPartsTabIcon className="h-4 w-4" active={view === "all"} />
@@ -210,12 +231,12 @@ export function PrintedParts() {
         <button
           type="button"
           onClick={() => setView("projects")}
-          className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+          className={`relative flex-1 min-w-0 py-2 px-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
             view === "projects" ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
           }`}
         >
           {view === "projects" && (
-            <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
+            <span className="absolute inset-0 rounded-[10px] bg-orange-100 z-0" />
           )}
           <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
             <ProjectsTabIcon className="h-4 w-4" active={view === "projects"} />
@@ -229,18 +250,13 @@ export function PrintedParts() {
           {projects.length > 0 ? (
             <div className="space-y-3 pb-4">
               {projects.map((project) => (
-                <Card
+                <ProjectCard
                   key={project.id}
-                  className="!p-[16px] gap-0 w-full max-w-none hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                  project={project}
+                  partCount={partCountByProject(project.id)}
+                  totalCost={totalCostByProject(project.id)}
                   onClick={() => navigate(`/parts/project/${project.id}`)}
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold truncate">{project.name}</h3>
-                    <span className="text-sm text-muted-foreground shrink-0">
-                      {partCountByProject(project.id)} part{partCountByProject(project.id) !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </Card>
+                />
               ))}
             </div>
           ) : (
@@ -283,7 +299,7 @@ export function PrintedParts() {
                 <SelectItem key={filament.id} value={filament.id}>
                   <div className="flex items-center gap-2">
                     <div
-                      className="w-3 h-3 rounded"
+                      className="w-3 h-3 rounded border border-[#E5E5E5]"
                       style={{ backgroundColor: filament.colorHex }}
                     />
                     {filament.name}

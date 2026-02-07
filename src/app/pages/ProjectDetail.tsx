@@ -5,6 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
 import { ProjectDialog } from "@/app/components/ProjectDialog";
+import { AddExistingPartDialog } from "@/app/components/AddExistingPartDialog";
 import { useApp, PrintedPart } from "@/app/context/AppContext";
 import { ProjectsEmptyIcon } from "@/imports/projects-empty-icon";
 import { PlusIcon } from "@/imports/plus-icon";
@@ -33,12 +34,16 @@ export function ProjectDetail() {
     deleteProject,
   } = useApp();
   const [partDialogOpen, setPartDialogOpen] = useState(false);
+  const [existingPartPickerOpen, setExistingPartPickerOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PrintedPart | null>(null);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [deleteProjectOpen, setDeleteProjectOpen] = useState(false);
 
   const project = projects.find((p) => p.id === projectId);
   const projectParts = printedParts.filter((p) => p.projectId === projectId);
+  const totalWeight = projectParts.reduce((sum, p) => sum + p.weightUsed, 0);
+  const totalTime = projectParts.reduce((sum, p) => sum + p.printTime, 0);
+  const totalHours = Math.floor(totalTime / 60);
 
   if (!project) {
     return (
@@ -48,7 +53,7 @@ export function ProjectDetail() {
       >
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project not found</h2>
-          <Button onClick={() => navigate("/parts")}>Back to parts</Button>
+          <Button onClick={() => navigate("/parts", { state: { view: "projects" } })}>Back to parts</Button>
         </div>
       </div>
     );
@@ -57,42 +62,48 @@ export function ProjectDetail() {
   const handleDeleteProject = () => {
     deleteProject(project.id);
     setDeleteProjectOpen(false);
-    navigate("/parts");
+    navigate("/parts", { state: { view: "projects" } });
   };
 
   return (
     <div
-      className="min-h-screen bg-background pb-24"
+      className="min-h-screen bg-background"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
-      <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0"
-          onClick={() => navigate("/parts")}
-          aria-label="Back"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex-1 min-w-0">
-          <h1 className="font-semibold text-lg truncate">{project.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            {projectParts.length} part{projectParts.length !== 1 ? "s" : ""}
-          </p>
+      <div className="p-4 space-y-4 max-w-md mx-auto pb-24">
+        {/* Header - same structure as Printed Parts */}
+        <div className="pt-2 flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 -ml-2"
+                onClick={() => navigate("/parts", { state: { view: "projects" } })}
+                aria-label="Back"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-3xl font-bold truncate">{project.name}</h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {projectParts.length} part{projectParts.length !== 1 ? "s" : ""}
+              {projectParts.length > 0 && ` • ${totalWeight}g used • ${totalHours}h`}
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="shrink-0"
+            onClick={() => setProjectDialogOpen(true)}
+          >
+            Edit
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setProjectDialogOpen(true)}
-        >
-          Edit
-        </Button>
-      </div>
 
-      <div className="p-4 space-y-4">
+        {/* Parts list - same as Printed Parts */}
         {projectParts.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-3 pb-4">
             {projectParts.map((part) => {
               const filament = filaments.find((f) => f.id === part.filamentId);
               return (
@@ -120,21 +131,31 @@ export function ProjectDetail() {
             <p className="text-sm text-muted-foreground mb-4">
               Add a part and assign it to this project.
             </p>
-            <Button onClick={() => { setEditingPart(null); setPartDialogOpen(true); }}>
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Add part
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => { setEditingPart(null); setPartDialogOpen(true); }}>
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Add new part
+              </Button>
+              <Button variant="outline" onClick={() => setExistingPartPickerOpen(true)}>
+                Add existing part
+              </Button>
+            </div>
           </div>
         )}
 
         {projectParts.length > 0 && (
-          <Button
-            className="w-full"
-            onClick={() => { setEditingPart(null); setPartDialogOpen(true); }}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Add part to project
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              className="w-full"
+              onClick={() => { setEditingPart(null); setPartDialogOpen(true); }}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add new part
+            </Button>
+            <Button variant="outline" onClick={() => setExistingPartPickerOpen(true)}>
+              Add existing part
+            </Button>
+          </div>
         )}
 
         <Button
@@ -163,6 +184,16 @@ export function ProjectDetail() {
         }}
         editPart={editingPart}
         defaultProjectId={project.id}
+      />
+
+      <AddExistingPartDialog
+        open={existingPartPickerOpen}
+        onOpenChange={setExistingPartPickerOpen}
+        parts={printedParts}
+        filaments={filaments}
+        projectId={project.id}
+        projectName={project.name}
+        onAddPart={(part) => updatePrintedPart({ ...part, projectId: project.id })}
       />
 
       <ProjectDialog

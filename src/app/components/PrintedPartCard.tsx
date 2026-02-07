@@ -1,6 +1,6 @@
 import { Card } from "@/app/components/ui/card";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
-import { getIconShadow } from "@/app/components/ui/utils";
+import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
 import { PrintedPart } from "@/app/context/AppContext";
 import { PartsIcon } from "@/imports/parts-icon";
 
@@ -43,13 +43,16 @@ export function PrintedPartCard({
     >
       <div className="flex items-center w-full gap-4">
         <div
-          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
           style={{
             backgroundColor: filamentColor || "#9ca3af",
             boxShadow: getIconShadow(filamentColor || "#9ca3af"),
           }}
         >
-          <PartsIcon active className="w-6 h-6 text-white drop-shadow-md" />
+          <PartsIcon
+            active
+            className={`w-6 h-6 drop-shadow-md ${isLightColor(filamentColor || "#9ca3af") ? "text-gray-300" : "text-white"}`}
+          />
         </div>
         <div className="flex-1 min-w-0 w-full">
           <h3 className="font-semibold truncate">{part.name}</h3>
@@ -62,11 +65,13 @@ export function PrintedPartCard({
       <div className="space-y-2 w-full mt-3">
         <div className="flex justify-between items-baseline gap-3 text-sm">
           <span className="text-muted-foreground shrink-0">Weight Used</span>
-          <span className="font-medium tabular-nums text-right min-w-[4rem]">{part.weightUsed}g</span>
+          <span className="font-medium tabular-nums text-right w-16 shrink-0">{part.weightUsed}g</span>
         </div>
         <div className="flex justify-between items-baseline gap-3 text-sm">
           <span className="text-muted-foreground shrink-0">Cost</span>
-          <span className="font-medium text-green-600 tabular-nums text-right min-w-[4rem]">
+          <span
+            className={`font-medium tabular-nums text-right w-16 shrink-0 ${partCost !== null ? "text-green-600" : "text-foreground"}`}
+          >
             {partCost !== null ? `$${partCost.toFixed(2)}` : "—"}
           </span>
         </div>

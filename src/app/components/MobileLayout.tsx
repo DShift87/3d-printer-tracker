@@ -20,19 +20,21 @@ export function MobileLayout({ children }: MobileLayoutProps) {
   const [iconsReady, setIconsReady] = useState(false);
 
   const isDashboard = location.pathname === "/";
+  const isStats = location.pathname.startsWith("/stats");
+  const showFabAddMenu = isDashboard || isStats;
 
   // Delay icon render until after scale animation to avoid SVG rendering glitches
   useEffect(() => {
-    if (isDashboard && addChoiceOpen) {
+    if (showFabAddMenu && addChoiceOpen) {
       const t = setTimeout(() => setIconsReady(true), 350);
       return () => clearTimeout(t);
     } else {
       setIconsReady(false);
     }
-  }, [isDashboard, addChoiceOpen]);
+  }, [showFabAddMenu, addChoiceOpen]);
 
   const handleFabClick = () => {
-    if (isDashboard) {
+    if (showFabAddMenu) {
       setAddChoiceOpen((o) => {
         if (o) setMenuAnimationDone(false);
         return !o;
@@ -78,7 +80,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       >
         <div className="content-stretch flex gap-[9px] items-center pt-[16px] pb-0 w-full max-w-md mx-auto px-4 min-w-0">
           {/* Nav pill - 4 items, fills available space */}
-          <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] flex-1 min-w-0 h-[64px] min-h-[64px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
+          <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-xl flex-1 min-w-0 h-[64px] min-h-[64px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
             {navItems.map((item) => {
               const isActive =
                 location.pathname === item.path ||
@@ -90,7 +92,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 h-full min-h-0 py-0 px-1 rounded-full transition-colors ${
+                  className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 h-full min-h-0 py-0 px-1 rounded-xl transition-colors ${
                     isActive
                       ? "text-[#F26D00]"
                       : "text-[#7A7A7A] hover:text-gray-900"
@@ -99,7 +101,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                   {isActive && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute inset-0 rounded-full z-0 bg-orange-100"
+                      className="absolute inset-0 rounded-[10px] z-0 bg-orange-100"
                       transition={{
                         type: "spring",
                         stiffness: 400,
@@ -115,10 +117,10 @@ export function MobileLayout({ children }: MobileLayoutProps) {
               );
             })}
           </div>
-          {/* FAB + add menu (Dashboard only) */}
+          {/* FAB + add menu (Dashboard and Stats) */}
           <div className="relative shrink-0">
             <AnimatePresence>
-              {isDashboard && addChoiceOpen && (
+              {showFabAddMenu && addChoiceOpen && (
                 <motion.div
                   key="add-menu"
                   initial={{ opacity: 0 }}
@@ -144,7 +146,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                     <button
                       type="button"
                       onClick={handleCreatePart}
-                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
+                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
                     >
                       {iconsReady ? (
                         <PartsIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
@@ -170,7 +172,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                     <button
                       type="button"
                       onClick={handleCreateFilament}
-                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
+                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
                     >
                       {iconsReady ? (
                         <FilamentIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
@@ -186,8 +188,8 @@ export function MobileLayout({ children }: MobileLayoutProps) {
               type="button"
               onClick={handleFabClick}
               aria-label={addChoiceOpen ? "Close" : "Add"}
-              className={`flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 h-[64px] w-[64px] min-h-[64px] min-w-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
-                isDashboard && addChoiceOpen
+              className={`flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 h-[64px] w-[64px] min-h-[64px] min-w-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
+                showFabAddMenu && addChoiceOpen
                   ? "bg-white hover:bg-gray-50"
                   : "bg-orange-500 hover:bg-orange-600 text-white"
               }`}
@@ -197,7 +199,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 className={`w-6 h-6 transition-transform duration-200 ${
-                  isDashboard && addChoiceOpen ? "rotate-45 text-[#F26D00]" : ""
+                  showFabAddMenu && addChoiceOpen ? "rotate-45 text-[#F26D00]" : ""
                 }`}
               >
                 <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z" />

@@ -164,7 +164,7 @@ export function FilamentQRDialog({
             </p>
             <div className="flex items-center justify-center gap-2">
               <div
-                className="w-4 h-4 rounded border"
+                className="w-4 h-4 rounded border border-[#E5E5E5]"
                 style={{ backgroundColor: filament.colorHex }}
               />
               <p className="text-sm text-muted-foreground">

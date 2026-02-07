@@ -164,7 +164,7 @@ export function Filaments() {
       </div>
 
       {/* Stock Tabs - same style as Printed Parts tabs */}
-      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
+      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-xl w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
         {(
           [
             { value: "all" as const, label: "All", count: filaments.length, Icon: AllFilamentsIcon },
@@ -178,12 +178,12 @@ export function Filaments() {
               key={tab.value}
               type="button"
               onClick={() => setStockFilter(tab.value)}
-              className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+              className={`relative flex-1 min-w-0 py-2 px-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
                 isActive ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
               }`}
             >
               {isActive && (
-                <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
+                <span className="absolute inset-0 rounded-[10px] bg-orange-100 z-0" />
               )}
               <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
                 {tab.value === "all" ? (

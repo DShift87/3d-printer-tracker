@@ -17,3 +17,14 @@ export function getIconShadow(hexColor: string): string {
   const b = parseInt(hex.slice(4, 6), 16);
   return `0 6px 30px 12px rgba(${r}, ${g}, ${b}, 0.16)`;
 }
+
+/** Returns true if the color is light (high luminance). Use to pick icon color for contrast. */
+export function isLightColor(hexColor: string): boolean {
+  const hex = hexColor.replace("#", "");
+  if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) return false;
+  const r = parseInt(hex.slice(0, 2), 16) / 255;
+  const g = parseInt(hex.slice(2, 4), 16) / 255;
+  const b = parseInt(hex.slice(4, 6), 16) / 255;
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 0.65;
+}

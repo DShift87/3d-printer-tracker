@@ -1,6 +1,6 @@
 import { Card } from "@/app/components/ui/card";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
-import { getIconShadow } from "@/app/components/ui/utils";
+import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { FavoriteIcon } from "@/imports/favorite-icon";
 
@@ -49,10 +49,13 @@ export function FilamentCard({ filament, onClick, onToggleFavorite }: FilamentCa
     >
       <div className="flex items-center w-full gap-4">
         <div
-          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
           style={{ backgroundColor: filament.colorHex, boxShadow: getIconShadow(filament.colorHex) }}
         >
-          <FilamentIcon active className="w-6 h-6 text-white drop-shadow-md" />
+          <FilamentIcon
+            active
+            className={`w-6 h-6 drop-shadow-md ${isLightColor(filament.colorHex) ? "text-gray-300" : "text-white"}`}
+          />
         </div>
         <div className="flex-1 min-w-0 w-full">
           <div className="flex items-center justify-between gap-2">

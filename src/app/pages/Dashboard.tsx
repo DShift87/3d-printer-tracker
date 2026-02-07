@@ -1,7 +1,7 @@
 import { AlertTriangle, Clock } from "lucide-react";
 import { Card } from "@/app/components/ui/card";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
-import { getIconShadow } from "@/app/components/ui/utils";
+import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
 import { Progress } from "@/app/components/ui/progress";
 import { useApp } from "@/app/context/AppContext";
 import { Badge } from "@/app/components/ui/badge";
@@ -152,13 +152,16 @@ export function Dashboard() {
                 >
                   <div className="flex items-center gap-3 w-full">
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
                       style={{
                         backgroundColor: filament?.colorHex || "#9ca3af",
                         boxShadow: getIconShadow(filament?.colorHex || "#9ca3af"),
                       }}
                     >
-                      <PartsIcon active className="w-5 h-5 text-white drop-shadow-md" />
+                      <PartsIcon
+                        active
+                        className={`w-5 h-5 drop-shadow-md ${isLightColor(filament?.colorHex || "#9ca3af") ? "text-gray-300" : "text-white"}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0 w-full">
                       <p className="font-medium text-sm truncate">{part.name}</p>
@@ -205,13 +208,16 @@ export function Dashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-3 flex-1 min-w-0 w-full">
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
                       style={{
                         backgroundColor: filament.colorHex,
                         boxShadow: getIconShadow(filament.colorHex),
                       }}
                     >
-                      <FilamentIcon active className="w-5 h-5 text-white drop-shadow-md" />
+                      <FilamentIcon
+                        active
+                        className={`w-5 h-5 drop-shadow-md ${isLightColor(filament.colorHex) ? "text-gray-300" : "text-white"}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0 w-full">
                       <p className="font-medium text-sm truncate">{filament.manufacturer}</p>
