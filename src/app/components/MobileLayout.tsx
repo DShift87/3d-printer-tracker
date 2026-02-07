@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
-import { Link, useLocation } from "react-router";
+import { ReactNode, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
+import { motion } from "motion/react";
 import { DashboardIcon } from "@/imports/dashboard-icon";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { PartsIcon } from "@/imports/parts-icon";
@@ -11,7 +12,29 @@ interface MobileLayoutProps {
 
 export function MobileLayout({ children }: MobileLayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { triggerAdd } = useAddAction();
+  const [addChoiceOpen, setAddChoiceOpen] = useState(false);
+
+  const isDashboard = location.pathname === "/";
+
+  const handleFabClick = () => {
+    if (isDashboard) {
+      setAddChoiceOpen((o) => !o);
+    } else {
+      triggerAdd();
+    }
+  };
+
+  const handleCreateFilament = () => {
+    setAddChoiceOpen(false);
+    navigate("/filaments", { state: { openAdd: true } });
+  };
+
+  const handleCreatePart = () => {
+    setAddChoiceOpen(false);
+    navigate("/parts", { state: { openAdd: true } });
+  };
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: DashboardIcon },
@@ -33,13 +56,12 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       <nav
         className="fixed left-0 right-0 flex justify-center items-end px-4"
         style={{
-          bottom: 0,
-          paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+          bottom: "max(12px, env(safe-area-inset-bottom))",
         }}
       >
-        <div className="content-stretch flex gap-[9px] items-center p-[16px]">
+        <div className="content-stretch flex gap-[9px] items-center pt-[16px] px-[16px] pb-0">
           {/* Nav pill - 3 items only */}
-          <div className="bg-white content-stretch flex gap-[8px] items-center p-[4px] rounded-[999px] shrink-0 w-[293px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]">
+          <div className="bg-white content-stretch flex gap-[8px] items-center p-[4px] rounded-[999px] shrink-0 w-[293px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
             {navItems.map((item) => {
               const isActive =
                 location.pathname === item.path ||
@@ -50,35 +72,80 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex flex-col items-center justify-center gap-1 flex-1 min-w-0 py-2 px-1 rounded-full transition-colors ${
+                  className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 py-2 px-1 rounded-full transition-colors ${
                     isActive
-                      ? "bg-orange-100 text-[#F26D00]"
+                      ? "text-[#F26D00]"
                       : "text-[#7A7A7A] hover:text-gray-900"
                   }`}
                 >
-                  <Icon active={isActive} />
-                  <span className="text-xs font-medium">{item.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-indicator"
+                      className="absolute inset-0 rounded-full z-0 bg-orange-100"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-[1] flex flex-col items-center gap-1">
+                    <Icon active={isActive} />
+                    <span className="text-xs font-medium">{item.label}</span>
+                  </span>
                 </Link>
               );
             })}
           </div>
-          {/* FAB - orange bg, white icon */}
-          <button
-            type="button"
-            onClick={triggerAdd}
-            aria-label="Add"
-            className="bg-orange-500 content-stretch flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[64px] hover:bg-orange-600 transition-colors shadow-[0_4px_16px_rgba(249,115,22,0.4),0_2px_8px_rgba(0,0,0,0.12)] active:scale-95 text-white"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-6 h-6"
+          {/* FAB + add menu (Dashboard only) */}
+          <div className="relative shrink-0">
+            {isDashboard && addChoiceOpen && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col gap-[12px] items-center mb-6">
+                <div className="relative flex justify-center items-center">
+                  <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Filament</p>
+                  <button
+                    type="button"
+                    onClick={handleCreateFilament}
+                    className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors"
+                  >
+                    <FilamentIcon active className="h-5 w-5 text-[#F26D00]" />
+                  </button>
+                </div>
+                <div className="relative flex justify-center items-center">
+                  <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Part</p>
+                  <button
+                    type="button"
+                    onClick={handleCreatePart}
+                    className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors"
+                  >
+                    <PartsIcon active className="h-5 w-5 text-[#F26D00]" />
+                  </button>
+                </div>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleFabClick}
+              aria-label={addChoiceOpen ? "Close" : "Add"}
+              className={`content-stretch flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
+                isDashboard && addChoiceOpen
+                  ? "bg-white hover:bg-gray-50"
+                  : "bg-orange-500 hover:bg-orange-600 text-white"
+              }`}
             >
-              <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z" />
-              <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z" />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className={`w-6 h-6 transition-transform duration-200 ${
+                  isDashboard && addChoiceOpen ? "rotate-45 text-[#F26D00]" : ""
+                }`}
+              >
+                <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z" />
+                <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z" />
+              </svg>
+            </button>
+          </div>
         </div>
       </nav>
     </div>

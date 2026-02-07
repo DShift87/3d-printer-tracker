@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, X } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
@@ -21,6 +21,7 @@ import {
 
 export function PrintedParts() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { printedParts, filaments, addPrintedPart, updatePrintedPart, deletePrintedPart } =
     useApp();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -54,6 +55,13 @@ export function PrintedParts() {
     registerAddHandler(handleAddNew);
     return unregisterAddHandler;
   }, [registerAddHandler, unregisterAddHandler, handleAddNew]);
+
+  useEffect(() => {
+    if ((location.state as { openAdd?: boolean })?.openAdd) {
+      handleAddNew();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, handleAddNew, navigate]);
 
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);

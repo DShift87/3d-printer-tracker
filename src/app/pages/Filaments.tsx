@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Package, X } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
 import { FilamentDialog } from "@/app/components/FilamentDialog";
-import { useEffect, useCallback } from "react";
 import { FilamentQRDialog } from "@/app/components/FilamentQRDialog";
 import { QRScannerDialog } from "@/app/components/QRScannerDialog";
 import { useAddAction } from "@/app/context/AddActionContext";
@@ -18,6 +17,7 @@ import { Input } from "@/app/components/ui/input";
 
 export function Filaments() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { filaments, addFilament, updateFilament, deleteFilament } = useApp();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingFilament, setEditingFilament] = useState<Filament | null>(null);
@@ -55,6 +55,13 @@ export function Filaments() {
     registerAddHandler(handleAddNew);
     return unregisterAddHandler;
   }, [registerAddHandler, unregisterAddHandler, handleAddNew]);
+
+  useEffect(() => {
+    if ((location.state as { openAdd?: boolean })?.openAdd) {
+      handleAddNew();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, handleAddNew, navigate]);
 
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
