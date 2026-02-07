@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
-import { AddFab } from "@/app/components/AddFab";
+import { useAddAction } from "@/app/context/AddActionContext";
 import { useApp, PrintedPart } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
@@ -29,6 +29,7 @@ export function PrintedParts() {
   const [sortBy, setSortBy] = useState<string>("date");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { registerAddHandler, unregisterAddHandler } = useAddAction();
 
   const handleSavePart = (partData: Omit<PrintedPart, "id"> | PrintedPart) => {
     if ("id" in partData) {
@@ -44,10 +45,15 @@ export function PrintedParts() {
     setDialogOpen(true);
   };
 
-  const handleAddNew = () => {
+  const handleAddNew = useCallback(() => {
     setEditingPart(null);
     setDialogOpen(true);
-  };
+  }, []);
+
+  useEffect(() => {
+    registerAddHandler(handleAddNew);
+    return unregisterAddHandler;
+  }, [registerAddHandler, unregisterAddHandler, handleAddNew]);
 
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
@@ -227,8 +233,6 @@ export function PrintedParts() {
         onSave={handleSavePart}
         editPart={editingPart}
       />
-
-      <AddFab onClick={handleAddNew} />
     </div>
   );
 }

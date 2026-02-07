@@ -4,9 +4,10 @@ import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
 import { FilamentDialog } from "@/app/components/FilamentDialog";
+import { useEffect, useCallback } from "react";
 import { FilamentQRDialog } from "@/app/components/FilamentQRDialog";
 import { QRScannerDialog } from "@/app/components/QRScannerDialog";
-import { AddFab } from "@/app/components/AddFab";
+import { useAddAction } from "@/app/context/AddActionContext";
 import { useApp, Filament } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
@@ -25,6 +26,7 @@ export function Filaments() {
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [selectedFilamentForQR, setSelectedFilamentForQR] = useState<Filament | null>(null);
   const [qrScannerOpen, setQrScannerOpen] = useState(false);
+  const { registerAddHandler, unregisterAddHandler } = useAddAction();
 
   const handleSaveFilament = (filamentData: Omit<Filament, "id"> | Filament) => {
     if ("id" in filamentData) {
@@ -44,10 +46,15 @@ export function Filaments() {
     navigate(`/filaments/${filament.id}`);
   };
 
-  const handleAddNew = () => {
+  const handleAddNew = useCallback(() => {
     setEditingFilament(null);
     setDialogOpen(true);
-  };
+  }, []);
+
+  useEffect(() => {
+    registerAddHandler(handleAddNew);
+    return unregisterAddHandler;
+  }, [registerAddHandler, unregisterAddHandler, handleAddNew]);
 
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
@@ -187,8 +194,6 @@ export function Filaments() {
         }}
         filament={selectedFilamentForQR}
       />
-
-      <AddFab onClick={handleAddNew} />
     </div>
   );
 }

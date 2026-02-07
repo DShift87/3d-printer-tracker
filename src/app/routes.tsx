@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate, Link, Outlet, useLocation } from "react-router";
+import { AddActionProvider } from "@/app/context/AddActionContext";
 import { MobileLayout } from "@/app/components/MobileLayout";
 import { Dashboard } from "@/app/pages/Dashboard";
 import { Filaments } from "@/app/pages/Filaments";
@@ -52,7 +53,11 @@ export const router = createBrowserRouter(
     },
     {
       path: "/",
-      element: <Outlet />,
+      element: (
+        <AddActionProvider>
+          <Outlet />
+        </AddActionProvider>
+      ),
       errorElement: <ErrorFallback />,
       children: [
         {
