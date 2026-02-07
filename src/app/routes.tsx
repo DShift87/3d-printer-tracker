@@ -6,6 +6,7 @@ import { Filaments } from "@/app/pages/Filaments";
 import { FilamentDetail } from "@/app/pages/FilamentDetail";
 import { PrintedParts } from "@/app/pages/PrintedParts";
 import { PrintedPartDetail } from "@/app/pages/PrintedPartDetail";
+import { Stats } from "@/app/pages/Stats";
 import { Button } from "@/app/components/ui/button";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, ""); // match Vite base, no trailing slash
@@ -91,6 +92,14 @@ export const router = createBrowserRouter(
         {
           path: "parts/:id",
           Component: () => <PrintedPartDetail />,
+        },
+        {
+          path: "stats",
+          Component: () => (
+            <MobileLayout>
+              <Stats />
+            </MobileLayout>
+          ),
         },
         {
           path: "*",

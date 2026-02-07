@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { DashboardIcon } from "@/imports/dashboard-icon";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { PartsIcon } from "@/imports/parts-icon";
+import { StatsIcon } from "@/imports/stats-icon";
 import { useAddAction } from "@/app/context/AddActionContext";
 
 interface MobileLayoutProps {
@@ -55,6 +56,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
     { path: "/", label: "Dashboard", icon: DashboardIcon },
     { path: "/filaments", label: "Filaments", icon: FilamentIcon },
     { path: "/parts", label: "Parts", icon: PartsIcon },
+    { path: "/stats", label: "Stats", icon: StatsIcon },
   ];
 
   return (
@@ -75,19 +77,20 @@ export function MobileLayout({ children }: MobileLayoutProps) {
         }}
       >
         <div className="content-stretch flex gap-[9px] items-center pt-[16px] pb-0 w-full max-w-md mx-auto px-4 min-w-0">
-          {/* Nav pill - 3 items only, fills available space */}
-          <div className="bg-white content-stretch flex gap-[8px] items-center p-[4px] rounded-[999px] flex-1 min-w-0 shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
+          {/* Nav pill - 4 items, fills available space */}
+          <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] flex-1 min-w-0 h-[64px] min-h-[64px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
             {navItems.map((item) => {
               const isActive =
                 location.pathname === item.path ||
-                (item.path === "/filaments" && location.pathname.startsWith("/filaments"));
+                (item.path === "/filaments" && location.pathname.startsWith("/filaments")) ||
+                (item.path === "/stats" && location.pathname.startsWith("/stats"));
               const Icon = item.icon;
 
               return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 py-2 px-1 rounded-full transition-colors ${
+                  className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 h-full min-h-0 py-0 px-1 rounded-full transition-colors ${
                     isActive
                       ? "text-[#F26D00]"
                       : "text-[#7A7A7A] hover:text-gray-900"
@@ -106,7 +109,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
                   )}
                   <span className="relative z-[1] flex flex-col items-center gap-1">
                     <Icon active={isActive} />
-                    <span className="text-xs font-medium">{item.label}</span>
+                    <span className="sr-only">{item.label}</span>
                   </span>
                 </Link>
               );
@@ -183,7 +186,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
               type="button"
               onClick={handleFabClick}
               aria-label={addChoiceOpen ? "Close" : "Add"}
-              className={`content-stretch flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
+              className={`flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 h-[64px] w-[64px] min-h-[64px] min-w-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
                 isDashboard && addChoiceOpen
                   ? "bg-white hover:bg-gray-50"
                   : "bg-orange-500 hover:bg-orange-600 text-white"
