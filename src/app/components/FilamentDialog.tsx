@@ -8,6 +8,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from "@/app/components/ui/drawer";
+import { useIsMobile } from "@/app/components/ui/use-mobile";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import {
@@ -84,6 +93,7 @@ export function FilamentDialog({
   editFilament,
   onShowQR,
 }: FilamentDialogProps) {
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     name: "",
     material: "PLA",
@@ -155,187 +165,224 @@ export function FilamentDialog({
     }
   };
 
+  const formBody = (
+    <>
+      <div className="grid gap-4 py-4">
+        <div className="space-y-2">
+          <Label htmlFor="manufacturer">Brand</Label>
+          <Select
+            value={formData.manufacturer}
+            onValueChange={(value) =>
+              setFormData({ ...formData, manufacturer: value })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MANUFACTURERS.map((manufacturer) => (
+                <SelectItem key={manufacturer} value={manufacturer}>
+                  {manufacturer}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="material">Material</Label>
+            <Select
+              value={formData.material}
+              onValueChange={(value) =>
+                setFormData({ ...formData, material: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {MATERIALS.map((material) => (
+                  <SelectItem key={material} value={material}>
+                    {material}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="diameter">Diameter (mm)</Label>
+            <Select
+              value={formData.diameter}
+              onValueChange={(value) =>
+                setFormData({ ...formData, diameter: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DIAMETERS.map((diameter) => (
+                  <SelectItem key={diameter} value={diameter}>
+                    {diameter}mm
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Color</Label>
+          <div className="flex flex-wrap gap-1.5">
+            {COLOR_PRESETS.map((preset) => (
+              <button
+                key={preset.name}
+                type="button"
+                onClick={() => handleColorSelect(preset.name)}
+                className={`size-8 shrink-0 rounded-md border-2 transition-all ${
+                  formData.color === preset.name
+                    ? "border-[#F26D00] ring-2 ring-[#F26D00]/30"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                style={{ backgroundColor: preset.hex }}
+                title={preset.name}
+              >
+                <span className="sr-only">{preset.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Input
+              value={formData.color}
+              onChange={(e) =>
+                setFormData({ ...formData, color: e.target.value })
+              }
+              placeholder="Color name"
+              className="flex-1"
+            />
+            <Input
+              type="color"
+              value={formData.colorHex}
+              onChange={(e) =>
+                setFormData({ ...formData, colorHex: e.target.value })
+              }
+              className="w-14 h-9 shrink-0 rounded-md cursor-pointer p-0.5 border border-input"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="totalWeight">Total Weight (g)</Label>
+            <Input
+              id="totalWeight"
+              type="number"
+              value={formData.totalWeight}
+              onChange={(e) =>
+                setFormData({ ...formData, totalWeight: e.target.value })
+              }
+              min="0"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="remainingWeight">Remaining (g)</Label>
+            <Input
+              id="remainingWeight"
+              type="number"
+              value={formData.remainingWeight}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  remainingWeight: e.target.value,
+                })
+              }
+              min="0"
+              max={formData.totalWeight}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="price">Price ($)</Label>
+            <Input
+              id="price"
+              type="number"
+              step="0.01"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
+              min="0"
+              placeholder="Optional"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="name">Description</Label>
+          <Input
+            id="name"
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+            placeholder="e.g., Matte Black PLA"
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  const title = editFilament ? "Edit Filament" : "Add New Filament";
+  const description = editFilament
+    ? "Update the details of your filament spool."
+    : "Add a new filament spool to your inventory.";
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[92vh] rounded-t-2xl border-t border-[#F26D00]/20 bg-white">
+          <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-gray-300" />
+          <DrawerHeader className="pb-2">
+            <DrawerTitle className="text-xl text-gray-900">{title}</DrawerTitle>
+            <DrawerDescription className="text-sm text-gray-500">
+              {description}
+            </DrawerDescription>
+          </DrawerHeader>
+          <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
+            <div className="flex-1 overflow-y-auto px-4 pb-4">{formBody}</div>
+            <DrawerFooter className="flex-row gap-2 border-t border-gray-100 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="flex-1 rounded-xl border-gray-200"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 rounded-xl bg-[#F26D00] hover:bg-[#e56300] text-white"
+              >
+                {editFilament ? "Update" : "Add"} Filament
+              </Button>
+            </DrawerFooter>
+          </form>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto" bottomSheet>
+      <DialogContent className="max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {editFilament ? "Edit Filament" : "Add New Filament"}
-          </DialogTitle>
-          <DialogDescription>
-            {editFilament
-              ? "Update the details of your filament spool."
-              : "Add a new filament spool to your inventory."}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            {/* Brand (Manufacturer) */}
-            <div className="space-y-2">
-              <Label htmlFor="manufacturer">Brand</Label>
-              <Select
-                value={formData.manufacturer}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, manufacturer: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MANUFACTURERS.map((manufacturer) => (
-                    <SelectItem key={manufacturer} value={manufacturer}>
-                      {manufacturer}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Material and Diameter */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="material">Material</Label>
-                <Select
-                  value={formData.material}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, material: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MATERIALS.map((material) => (
-                      <SelectItem key={material} value={material}>
-                        {material}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="diameter">Diameter (mm)</Label>
-                <Select
-                  value={formData.diameter}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, diameter: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIAMETERS.map((diameter) => (
-                      <SelectItem key={diameter} value={diameter}>
-                        {diameter}mm
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Color</Label>
-              <div className="grid grid-cols-5 gap-2">
-                {COLOR_PRESETS.map((preset) => (
-                  <button
-                    key={preset.name}
-                    type="button"
-                    onClick={() => handleColorSelect(preset.name)}
-                    className={`aspect-square rounded-lg border-2 transition-all ${
-                      formData.color === preset.name
-                        ? "border-primary ring-2 ring-primary"
-                        : "border-gray-300 hover:border-gray-400"
-                    }`}
-                    style={{ backgroundColor: preset.hex }}
-                    title={preset.name}
-                  >
-                    <span className="sr-only">{preset.name}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  value={formData.color}
-                  onChange={(e) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
-                  placeholder="Color name"
-                  className="flex-1"
-                />
-                <Input
-                  type="color"
-                  value={formData.colorHex}
-                  onChange={(e) =>
-                    setFormData({ ...formData, colorHex: e.target.value })
-                  }
-                  className="w-20"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="totalWeight">Total Weight (g)</Label>
-                <Input
-                  id="totalWeight"
-                  type="number"
-                  value={formData.totalWeight}
-                  onChange={(e) =>
-                    setFormData({ ...formData, totalWeight: e.target.value })
-                  }
-                  min="0"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="remainingWeight">Remaining (g)</Label>
-                <Input
-                  id="remainingWeight"
-                  type="number"
-                  value={formData.remainingWeight}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      remainingWeight: e.target.value,
-                    })
-                  }
-                  min="0"
-                  max={formData.totalWeight}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="price">Price ($)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) =>
-                    setFormData({ ...formData, price: e.target.value })
-                  }
-                  min="0"
-                  placeholder="Optional"
-                />
-              </div>
-            </div>
-
-            {/* Description - Last */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Description</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="e.g., Matte Black PLA"
-              />
-            </div>
-          </div>
+          {formBody}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
