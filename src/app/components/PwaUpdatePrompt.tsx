@@ -21,8 +21,9 @@ export function PwaUpdatePrompt() {
     <div
       className="animate-in fade-in slide-in-from-top-4 duration-300 fixed left-4 right-4 top-0 z-[100] mx-auto flex max-w-md items-center justify-between gap-2 rounded-b-xl border border-[#F26D00]/25 bg-orange-50/90 backdrop-blur-sm px-3 py-2 shadow-[0_4px_12px_rgba(242,109,0,0.12)]"
       style={{
-        paddingTop: "max(8px, env(safe-area-inset-top))",
-        marginTop: "max(12px, env(safe-area-inset-top))",
+        paddingTop: 8,
+        paddingBottom: 8,
+        marginTop: 8,
       }}
     >
       <span className="text-xs font-medium text-gray-800">Update available</span>
