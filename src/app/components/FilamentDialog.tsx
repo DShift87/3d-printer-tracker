@@ -234,13 +234,13 @@ export function FilamentDialog({
 
         <div className="space-y-2">
           <Label>Color</Label>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 min-w-0">
             {COLOR_PRESETS.map((preset) => (
               <button
                 key={preset.name}
                 type="button"
                 onClick={() => handleColorSelect(preset.name)}
-                className={`size-8 shrink-0 rounded-md border-2 transition-all ${
+                className={`h-9 w-9 shrink-0 rounded-md border-2 transition-all ${
                   formData.color === preset.name
                     ? "border-[#F26D00] ring-2 ring-[#F26D00]/30"
                     : "border-gray-200 hover:border-gray-300"
@@ -342,8 +342,7 @@ export function FilamentDialog({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[92vh] rounded-t-2xl border-t border-[#F26D00]/20 bg-white">
-          <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-gray-300" />
+        <DrawerContent className="max-h-[92vh] rounded-t-2xl border-t border-[#F26D00]/20 bg-white [&>div:first-child]:!h-1.5 [&>div:first-child]:!w-9 [&>div:first-child]:!mt-3 [&>div:first-child]:!min-h-0 [&>div:first-child]:!min-w-0">
           <DrawerHeader className="pb-2">
             <DrawerTitle className="text-xl text-gray-900">{title}</DrawerTitle>
             <DrawerDescription className="text-sm text-gray-500">
@@ -352,7 +351,7 @@ export function FilamentDialog({
           </DrawerHeader>
           <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
             <div className="flex-1 overflow-y-auto px-4 pb-4">{formBody}</div>
-            <DrawerFooter className="flex-row gap-2 border-t border-gray-100 pt-4">
+            <DrawerFooter className="flex-row gap-2 border-t border-gray-100 pt-4 pb-6 px-4" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
               <Button
                 type="button"
                 variant="outline"
