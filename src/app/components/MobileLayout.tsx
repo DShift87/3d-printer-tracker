@@ -1,11 +1,11 @@
-import { ReactNode, useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
+import { ReactNode, useState } from "react";
+import { Link, useLocation } from "react-router";
+import { motion } from "motion/react";
 import { DashboardIcon } from "@/imports/dashboard-icon";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { PartsIcon } from "@/imports/parts-icon";
 import { StatsIcon } from "@/imports/stats-icon";
-import { useAddAction } from "@/app/context/AddActionContext";
+import { AddActionSheet } from "@/app/components/AddActionSheet";
 
 interface MobileLayoutProps {
   children: ReactNode;
@@ -13,46 +13,7 @@ interface MobileLayoutProps {
 
 export function MobileLayout({ children }: MobileLayoutProps) {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { triggerAdd } = useAddAction();
-  const [addChoiceOpen, setAddChoiceOpen] = useState(false);
-  const [menuAnimationDone, setMenuAnimationDone] = useState(false);
-  const [iconsReady, setIconsReady] = useState(false);
-
-  const isDashboard = location.pathname === "/";
-  const isStats = location.pathname.startsWith("/stats");
-  const showFabAddMenu = isDashboard || isStats;
-
-  // Delay icon render until after scale animation to avoid SVG rendering glitches
-  useEffect(() => {
-    if (showFabAddMenu && addChoiceOpen) {
-      const t = setTimeout(() => setIconsReady(true), 350);
-      return () => clearTimeout(t);
-    } else {
-      setIconsReady(false);
-    }
-  }, [showFabAddMenu, addChoiceOpen]);
-
-  const handleFabClick = () => {
-    if (showFabAddMenu) {
-      setAddChoiceOpen((o) => {
-        if (o) setMenuAnimationDone(false);
-        return !o;
-      });
-    } else {
-      triggerAdd();
-    }
-  };
-
-  const handleCreateFilament = () => {
-    setAddChoiceOpen(false);
-    navigate("/filaments", { state: { openAdd: true } });
-  };
-
-  const handleCreatePart = () => {
-    setAddChoiceOpen(false);
-    navigate("/parts", { state: { openAdd: true } });
-  };
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: DashboardIcon },
@@ -117,90 +78,20 @@ export function MobileLayout({ children }: MobileLayoutProps) {
               );
             })}
           </div>
-          {/* FAB + add menu (Dashboard and Stats) */}
+          {/* FAB → opens add-action bottom sheet on every screen */}
           <div className="relative shrink-0">
-            <AnimatePresence>
-              {showFabAddMenu && addChoiceOpen && (
-                <motion.div
-                  key="add-menu"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col-reverse gap-[12px] items-center mb-6 z-10"
-                >
-                  <motion.div
-                    className={`relative flex justify-center items-center origin-bottom ${menuAnimationDone ? "z-10" : ""}`}
-                    initial={{ opacity: 0, scale: 0, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0, y: 8 }}
-                    onAnimationComplete={() => setMenuAnimationDone(true)}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 28,
-                      delay: 0.05,
-                    }}
-                  >
-                    <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Part</p>
-                    <button
-                      type="button"
-                      onClick={handleCreatePart}
-                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
-                    >
-                      {iconsReady ? (
-                        <PartsIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
-                      ) : (
-                        <span className="h-5 w-5" aria-hidden />
-                      )}
-                    </button>
-                  </motion.div>
-                  <motion.div
-                    className={`relative flex justify-center items-center origin-bottom ${menuAnimationDone ? "z-20" : ""}`}
-                    initial={{ opacity: 0, scale: 0, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0, y: 8 }}
-                    onAnimationComplete={() => setMenuAnimationDone(true)}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 28,
-                      delay: 0.1,
-                    }}
-                  >
-                    <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Filament</p>
-                    <button
-                      type="button"
-                      onClick={handleCreateFilament}
-                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
-                    >
-                      {iconsReady ? (
-                        <FilamentIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
-                      ) : (
-                        <span className="h-5 w-5" aria-hidden />
-                      )}
-                    </button>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <AddActionSheet open={addSheetOpen} onOpenChange={setAddSheetOpen} />
             <button
               type="button"
-              onClick={handleFabClick}
-              aria-label={addChoiceOpen ? "Close" : "Add"}
-              className={`flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 h-[64px] w-[64px] min-h-[64px] min-w-[64px] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95 ${
-                showFabAddMenu && addChoiceOpen
-                  ? "bg-white hover:bg-gray-50"
-                  : "bg-orange-500 hover:bg-orange-600 text-white"
-              }`}
+              onClick={() => setAddSheetOpen(true)}
+              aria-label="Add"
+              className="flex flex-col items-center justify-center p-[4px] rounded-xl shrink-0 h-[64px] w-[64px] min-h-[64px] min-w-[64px] bg-orange-500 hover:bg-orange-600 text-white transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] active:scale-95"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className={`w-6 h-6 transition-transform duration-200 ${
-                  showFabAddMenu && addChoiceOpen ? "rotate-45 text-[#F26D00]" : ""
-                }`}
+                className="w-6 h-6"
               >
                 <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z" />
                 <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z" />

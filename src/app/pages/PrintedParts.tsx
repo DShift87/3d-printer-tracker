@@ -108,6 +108,14 @@ export function PrintedParts() {
     }
   }, [location.state, location.pathname, handleAddNew, navigate]);
 
+  useEffect(() => {
+    if ((location.state as { openProjectDialog?: boolean })?.openProjectDialog) {
+      setEditingProject(null);
+      setProjectDialogOpen(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
+
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
     if (searchOpen) {
