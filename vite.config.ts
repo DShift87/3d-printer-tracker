@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import path from 'path'
 import fs from 'fs'
+import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
@@ -78,6 +79,16 @@ export default defineConfig({
     manifestPlugin(),
     react(),
     tailwindcss(),
+    VitePWA({
+      registerType: 'prompt',
+      base,
+      includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png'],
+      manifest: false,
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        cleanupOutdatedCaches: true,
+      },
+    }),
   ],
   resolve: {
     alias: {
