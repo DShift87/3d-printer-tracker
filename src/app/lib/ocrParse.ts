@@ -6,6 +6,7 @@
 export interface ParsedFromImage {
   printTimeMinutes: number | null;
   price: number | null;
+  weightGrams: number | null;
   rawText: string;
 }
 
@@ -61,10 +62,59 @@ function parsePrice(text: string): number | null {
   return null;
 }
 
+/** Match weight: 25g, 25 g, 50.5g, 0.5kg, 100 grams, filament used: 25.3g, etc. */
+function parseWeight(text: string): number | null {
+  const joined = text.replace(/\s+/g, " ").toLowerCase();
+  const toNum = (s: string) => {
+    const n = parseFloat(s.replace(",", "."));
+    return isNaN(n) ? null : n;
+  };
+
+  // Weight/filament/used context: "weight: 25.3g", "filament used: 25g", "used: 25.3 g"
+  const contextMatch = joined.match(/(?:weight|filament|used|material)\s*:?\s*(\d+(?:[.,]\d+)?)\s*[gq9]?(?:ram)?s?(?:\s|$|[^\w])/i) ||
+    joined.match(/(?:weight|filament|used|material)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(?:g|grams?)/i);
+  if (contextMatch) {
+    const num = toNum(contextMatch[1]);
+    if (num != null && num < 10000) return num; // sanity: avoid huge numbers
+  }
+
+  // Xg, X g, X.XXg (grams) - also OCR may read g as q or 9
+  const gMatch = joined.match(/(\d+(?:[.,]\d+)?)\s*[gq9](?:ram)?s?(?:\s|$|[^\w])/i) ||
+    joined.match(/(\d+(?:[.,]\d+)?)\s*g(?:ram)?s?(?:\s|$|[^\w])/i);
+  if (gMatch) {
+    const num = toNum(gMatch[1]);
+    if (num != null && num < 10000) return num;
+  }
+
+  // "X grams", "X gram"
+  const gramsMatch = joined.match(/(\d+(?:[.,]\d+)?)\s*grams?/i);
+  if (gramsMatch) {
+    const num = toNum(gramsMatch[1]);
+    if (num != null && num < 10000) return num;
+  }
+
+  // Xkg (kilograms -> grams)
+  const kgMatch = joined.match(/(\d+(?:[.,]\d+)?)\s*kg(?:\s|$|[^\w])/i);
+  if (kgMatch) {
+    const num = toNum(kgMatch[1]);
+    if (num != null && num < 100) return num * 1000;
+  }
+
+  // Bare number before "g" with optional OCR noise: "25.39" when it's "25.3g"
+  const bareMatch = joined.match(/(\d{1,2}(?:[.,]\d{1,2})?)\s*g\b/i);
+  if (bareMatch) {
+    const num = toNum(bareMatch[1]);
+    if (num != null && num > 0 && num < 1000) return num;
+  }
+
+  return null;
+}
+
 export function parseOcrText(text: string): ParsedFromImage {
   return {
     printTimeMinutes: parsePrintTime(text),
     price: parsePrice(text),
+    weightGrams: parseWeight(text),
     rawText: text,
   };
 }

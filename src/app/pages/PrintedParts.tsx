@@ -47,6 +47,7 @@ export function PrintedParts() {
   const [scannedInitialData, setScannedInitialData] = useState<{
     printTimeHours: number;
     printTimeMinutes: number;
+    weightUsed?: number;
     notes: string;
   } | null>(null);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
@@ -211,7 +212,11 @@ export function PrintedParts() {
             <Button
               variant="ghost"
               size="icon"
+              className="min-w-[44px] min-h-[44px] touch-manipulation"
               onClick={() => setImageScanOpen(true)}
+              onPointerUp={(e) => {
+                if (e.pointerType === "touch") setImageScanOpen(true);
+              }}
               aria-label="Scan image for part info"
             >
               <QrScannerIcon />
@@ -394,6 +399,7 @@ export function PrintedParts() {
           setScannedInitialData({
             printTimeHours: data.printTimeHours,
             printTimeMinutes: data.printTimeMinutes,
+            weightUsed: data.weightUsed ?? undefined,
             notes: data.notes,
           });
           setImageScanOpen(false);

@@ -25,6 +25,7 @@ import { resizeImageToDataUrl } from "@/app/lib/imageUtils";
 export interface PartDialogInitialData {
   printTimeHours?: number;
   printTimeMinutes?: number;
+  weightUsed?: number;
   notes?: string;
 }
 
@@ -81,7 +82,7 @@ export function PrintedPartDialog({
       const base = {
         name: "",
         filamentId: filaments[0]?.id || "",
-        weightUsed: "",
+        weightUsed: initialData?.weightUsed != null ? String(initialData.weightUsed) : "",
         printTimeHours: initialData?.printTimeHours != null ? String(initialData.printTimeHours) : "",
         printTimeMinutes: initialData?.printTimeMinutes != null ? String(initialData.printTimeMinutes) : "",
         printDate: new Date().toISOString().split("T")[0],
