@@ -262,7 +262,7 @@ export function PrintedPartDialog({
               </div>
               <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="printDate">Print Date</Label>
-                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0 [&_input::-webkit-datetime-edit]:!text-sm">
+                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0 [&_input::-webkit-datetime-edit]:!text-sm [&_input::-webkit-calendar-picker-indicator]:!opacity-0 [&_input::-webkit-calendar-picker-indicator]:!w-0 [&_input::-webkit-calendar-picker-indicator]:!cursor-pointer">
                   <Input
                     id="printDate"
                     type="date"
