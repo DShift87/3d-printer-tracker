@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-export function InventoryValueIcon({ className }: { className?: string }) {
+export function InventoryValueIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const id = useId();
   const clipId = `clip0-invvalue-${id.replace(/:/g, "")}`;
   const maskId = `mask0-invvalue-${id.replace(/:/g, "")}`;
@@ -13,6 +13,7 @@ export function InventoryValueIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       fill="none"
       className={className}
+      style={style}
     >
       <g clipPath={`url(#${clipId})`}>
         <mask

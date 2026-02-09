@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-export function LowStockIcon({ className }: { className?: string }) {
+export function LowStockIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const id = useId();
   const clipId = `clip0-lowstock-${id.replace(/:/g, "")}`;
 
@@ -12,6 +12,7 @@ export function LowStockIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       fill="none"
       className={className}
+      style={style}
     >
       <g clipPath={`url(#${clipId})`}>
         <path

@@ -3,9 +3,10 @@ import { useId } from "react";
 interface PartsIconProps {
   className?: string;
   active?: boolean;
+  style?: React.CSSProperties;
 }
 
-export function PartsIcon({ className = "", active = false }: PartsIconProps) {
+export function PartsIcon({ className = "", active = false, style }: PartsIconProps) {
   const id = useId();
   const clipIdActive = `clip0-parts-active-${id.replace(/:/g, "")}`;
   const maskIdActive = `mask0-parts-active-${id.replace(/:/g, "")}`;
@@ -21,6 +22,7 @@ export function PartsIcon({ className = "", active = false }: PartsIconProps) {
         viewBox="0 0 24 24"
         fill="none"
         className={className}
+        style={style}
       >
         <g clipPath={`url(#${clipIdActive})`}>
           <mask id={maskIdActive} style={{ maskType: "luminance" }} maskUnits="userSpaceOnUse" x="-1" y="0" width="25" height="24">
@@ -48,6 +50,7 @@ export function PartsIcon({ className = "", active = false }: PartsIconProps) {
       viewBox="0 0 24 24"
       fill="none"
       className={className}
+      style={style}
     >
       <g clipPath={`url(#${clipIdInactive})`}>
         <mask id={maskIdInactive} style={{ maskType: "luminance" }} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">

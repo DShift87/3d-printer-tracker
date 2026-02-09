@@ -1,7 +1,7 @@
 import { AlertTriangle, Clock } from "lucide-react";
 import { Card } from "@/app/components/ui/card";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
-import { getIconShadow, isLightColor } from "@/app/components/ui/utils";
+import { IconWithSvgFilter } from "@/app/components/IconWithSvgFilter";
 import { Progress } from "@/app/components/ui/progress";
 import { useApp } from "@/app/context/AppContext";
 import { Badge } from "@/app/components/ui/badge";
@@ -54,7 +54,7 @@ export function Dashboard() {
       {/* Header */}
       <div className="pt-2">
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-3xl font-bold mb-1">Dashboard - v1.0.4</h1>
+          <h1 className="text-3xl font-bold mb-1">Dashboard - Big Icons</h1>
           {isCloudSync && (
             <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1">
               {isCloudLoading ? (
@@ -75,14 +75,11 @@ export function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 w-full items-stretch">
-        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-[#F26D00]/10 to-[#F26D00]/5 border-[#F26D00]/20" onClick={() => navigate("/filaments")}>
-          <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "rgba(242, 109, 0, 0.2)", boxShadow: getIconShadow("#F26D00") }}
-            >
-              <FilamentIcon active className="h-5 w-5 text-[#F26D00]" />
-            </div>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-[#F26D00]/10 to-[#F26D00]/5 border-[#F26D00]/20 !overflow-visible" onClick={() => navigate("/filaments")}>
+          <div className="flex items-center gap-3 overflow-visible">
+            <IconWithSvgFilter color="#F26D00">
+              <FilamentIcon active className="h-12 w-12" style={{ color: "#F26D00" }} />
+            </IconWithSvgFilter>
             <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs font-medium mb-0.5 text-[#F26D00]/70">Filament Spools</p>
               <p className="text-2xl font-bold leading-none text-[#F26D00]">{totalSpools}</p>
@@ -90,14 +87,11 @@ export function Dashboard() {
           </div>
         </Card>
 
-        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-200/50" onClick={() => navigate("/parts")}>
-          <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0"
-              style={{ boxShadow: getIconShadow("#3b82f6") }}
-            >
-              <PartsIcon active className="h-5 w-5 text-blue-600" />
-            </div>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-200/50 !overflow-visible" onClick={() => navigate("/parts")}>
+          <div className="flex items-center gap-3 overflow-visible">
+            <IconWithSvgFilter color="#3b82f6">
+              <PartsIcon active className="h-12 w-12" style={{ color: "#3b82f6" }} />
+            </IconWithSvgFilter>
             <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-blue-600/70 mb-0.5 font-medium">Printed Parts</p>
               <p className="text-2xl font-bold leading-none text-blue-600">{totalParts}</p>
@@ -105,14 +99,11 @@ export function Dashboard() {
           </div>
         </Card>
 
-        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-200/50" onClick={() => navigate("/filaments", { state: { tab: "low" } })}>
-          <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0"
-              style={{ boxShadow: getIconShadow("#ef4444") }}
-            >
-              <LowStockIcon className="h-5 w-5 text-red-600" />
-            </div>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-200/50 !overflow-visible" onClick={() => navigate("/filaments", { state: { tab: "low" } })}>
+          <div className="flex items-center gap-3 overflow-visible">
+            <IconWithSvgFilter color="#ef4444">
+              <LowStockIcon className="h-12 w-12" style={{ color: "#ef4444" }} />
+            </IconWithSvgFilter>
             <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-red-600/70 mb-0.5 font-medium">Low Stock</p>
               <p className="text-2xl font-bold leading-none text-red-600">{lowStockCount}</p>
@@ -120,14 +111,11 @@ export function Dashboard() {
           </div>
         </Card>
 
-        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-200/50">
-          <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0"
-              style={{ boxShadow: getIconShadow("#22c55e") }}
-            >
-              <InventoryValueIcon className="h-5 w-5 text-green-600" />
-            </div>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-200/50 !overflow-visible">
+          <div className="flex items-center gap-3 overflow-visible">
+            <IconWithSvgFilter color="#22c55e">
+              <InventoryValueIcon className="h-12 w-12" style={{ color: "#22c55e" }} />
+            </IconWithSvgFilter>
             <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-green-600/70 mb-0.5 font-medium">Inventory Value</p>
               <p className="text-2xl font-bold leading-none text-green-600">${totalValue.toFixed(0)}</p>
@@ -149,28 +137,23 @@ export function Dashboard() {
           </button>
         </div>
         {recentParts.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-2 overflow-visible">
             {recentParts.map((part) => {
               const filament = filaments.find((f) => f.id === part.filamentId);
               return (
                 <Card
                   key={part.id}
-                  className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors"
+                  className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors !overflow-visible"
                   onClick={() => navigate(`/parts/${part.id}`)}
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
-                      style={{
-                        backgroundColor: filament?.colorHex || "#9ca3af",
-                        boxShadow: getIconShadow(filament?.colorHex || "#9ca3af"),
-                      }}
-                    >
+                  <div className="flex items-center gap-3 w-full overflow-visible">
+                    <IconWithSvgFilter color={filament?.colorHex || "#9ca3af"}>
                       <PartsIcon
                         active
-                        className={`w-5 h-5 drop-shadow-md ${isLightColor(filament?.colorHex || "#9ca3af") ? "text-gray-300" : "text-white"}`}
+                        className="w-12 h-12"
+                        style={{ color: filament?.colorHex || "#9ca3af" }}
                       />
-                    </div>
+                    </IconWithSvgFilter>
                     <div className="flex-1 min-w-0 w-full">
                       <p className="font-medium text-sm truncate">{part.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -206,27 +189,22 @@ export function Dashboard() {
           </button>
         </div>
         {mostUsedFilaments.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-2 overflow-visible">
             {mostUsedFilaments.map((filament) => (
               <Card
                 key={filament.id}
-                className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors"
+                className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors !overflow-visible"
                 onClick={() => navigate(`/filaments/${filament.id}`)}
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3 flex-1 min-w-0 w-full">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border border-[#E5E5E5]"
-                      style={{
-                        backgroundColor: filament.colorHex,
-                        boxShadow: getIconShadow(filament.colorHex),
-                      }}
-                    >
+                <div className="flex items-center justify-between w-full overflow-visible">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 w-full overflow-visible">
+                    <IconWithSvgFilter color={filament.colorHex}>
                       <FilamentIcon
                         active
-                        className={`w-5 h-5 drop-shadow-md ${isLightColor(filament.colorHex) ? "text-gray-300" : "text-white"}`}
+                        className="w-12 h-12"
+                        style={{ color: filament.colorHex }}
                       />
-                    </div>
+                    </IconWithSvgFilter>
                     <div className="flex-1 min-w-0 w-full">
                       <p className="font-medium text-sm truncate">{filament.manufacturer}</p>
                       <div className="flex flex-wrap gap-2 mt-1 w-full">

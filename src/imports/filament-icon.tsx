@@ -3,9 +3,10 @@ import { useId } from "react";
 interface FilamentIconProps {
   className?: string;
   active?: boolean;
+  style?: React.CSSProperties;
 }
 
-export function FilamentIcon({ className = "", active = false }: FilamentIconProps) {
+export function FilamentIcon({ className = "", active = false, style }: FilamentIconProps) {
   const id = useId();
   const clipId = `clip0-fil-${id.replace(/:/g, "")}`;
   const maskId = `mask0-fil-${id.replace(/:/g, "")}`;
@@ -19,6 +20,7 @@ export function FilamentIcon({ className = "", active = false }: FilamentIconPro
         viewBox="0 0 24 24"
         fill="none"
         className={className}
+        style={style}
       >
         <g clipPath={`url(#${clipId})`}>
           <mask
@@ -56,6 +58,7 @@ export function FilamentIcon({ className = "", active = false }: FilamentIconPro
       viewBox="0 0 24 24"
       fill="none"
       className={className}
+      style={style}
     >
       <path
         d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
