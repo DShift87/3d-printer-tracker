@@ -16,6 +16,7 @@ import { DeleteIcon } from "@/imports/delete-icon";
 import { EditIcon } from "@/imports/edit-icon";
 import { WeightIcon } from "@/imports/weight-icon";
 import { AddImageIcon } from "@/imports/add-image-icon";
+import { FilamentIcon } from "@/imports/filament-icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -87,8 +88,10 @@ export function PrintedPartDetail() {
       setUploading(false);
     }
   };
+  const openImagePicker = () => fileInputRef.current?.click();
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
     updatePrintedPart({ ...part, imageUrl: undefined });
     toast.success("Image removed");
   };
@@ -207,9 +210,14 @@ export function PrintedPartDetail() {
                 <span className="text-muted-foreground">Color</span>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-4 h-4 rounded border border-[#E5E5E5]"
+                    className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 border border-[#E5E5E5]"
                     style={{ backgroundColor: filament.colorHex }}
-                  />
+                  >
+                    <FilamentIcon
+                      active
+                      className={`w-3 h-3 ${isLightColor(filament.colorHex) ? "text-gray-400" : "text-white"}`}
+                    />
+                  </div>
                   <span>{filament.color}</span>
                 </div>
               </div>
@@ -240,45 +248,40 @@ export function PrintedPartDetail() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             className="hidden"
             onChange={handleImageUpload}
             disabled={uploading}
           />
           {part.imageUrl ? (
             <div className="rounded-lg overflow-hidden bg-muted border">
-              <img
-                src={part.imageUrl}
-                alt={part.name}
-                className="w-full aspect-video object-cover"
-              />
-              <div className="flex gap-2 p-2">
-                <Button
+              <button
+                type="button"
+                onClick={openImagePicker}
+                disabled={uploading}
+                className="w-full block text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg overflow-hidden"
+              >
+                <img
+                  src={part.imageUrl}
+                  alt={part.name}
+                  className="w-full aspect-video object-cover"
+                />
+              </button>
+              <div className="p-2">
+                <button
                   type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  {uploading ? "Uploading…" : "Change image"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive"
                   onClick={handleRemoveImage}
+                  className="text-sm text-destructive hover:underline"
                 >
-                  Remove
-                </Button>
+                  Remove image
+                </button>
               </div>
             </div>
           ) : (
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={openImagePicker}
               disabled={uploading}
-              className="w-full rounded-lg border-2 border-dashed border-muted-foreground/30 aspect-video flex flex-col items-center justify-center gap-3 text-muted-foreground hover:bg-muted/50 transition-colors"
+              className="w-full rounded-lg border-2 border-dashed border-muted-foreground/30 aspect-video flex flex-col items-center justify-center gap-3 text-muted-foreground hover:bg-muted/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <AddImageIcon className="w-12 h-12" />
               <span className="text-sm font-medium">{uploading ? "Uploading…" : "Add part image"}</span>
