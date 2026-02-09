@@ -179,3 +179,15 @@
     line-height: 1.5;
   }
 }
+
+/* Print Date field: center text on mobile (iOS Safari ignores Tailwind on native date input) */
+#printDate {
+  text-align: center !important;
+}
+#printDate::-webkit-datetime-edit,
+#printDate::-webkit-datetime-edit-text,
+#printDate::-webkit-datetime-edit-month-field,
+#printDate::-webkit-datetime-edit-day-field,
+#printDate::-webkit-datetime-edit-year-field {
+  text-align: center !important;
+}

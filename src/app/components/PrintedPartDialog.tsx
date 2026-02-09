@@ -262,16 +262,26 @@ export function PrintedPartDialog({
               </div>
               <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="printDate">Print Date</Label>
-                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0 [&_input::-webkit-datetime-edit]:!text-sm [&_input::-webkit-calendar-picker-indicator]:!opacity-0 [&_input::-webkit-calendar-picker-indicator]:!w-0 [&_input::-webkit-calendar-picker-indicator]:!cursor-pointer">
-                  <Input
+                <div className="relative h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background">
+                  <div className="absolute inset-0 flex items-center justify-center text-sm text-foreground pointer-events-none">
+                    {formData.printDate
+                      ? new Date(formData.printDate + "T12:00:00").toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : ""}
+                  </div>
+                  <input
                     id="printDate"
                     type="date"
                     value={formData.printDate}
                     onChange={(e) =>
                       setFormData({ ...formData, printDate: e.target.value })
                     }
-                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md text-sm"
                     required
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-sm"
+                    aria-label="Print date"
                   />
                 </div>
               </div>
